@@ -4,12 +4,10 @@ const PORT = process.env.PORT || 3000
 const HOST = process.env.HOST || 'localhost'
 const path = require('path');
 let app = express();
-const databaseName = "test";
 
 
 const users = require('./db/example_users.json')
 const featuresInfo = require('./db/features.json')
-
 
 let featuresToogle = []
 let userDetails = []
@@ -19,7 +17,6 @@ const pickRandomUser = () => {
     userDetails.push(userRandomized)
 }
 
-
 const gettingFeatures = () => {
 featuresToogle=[]
 pickRandomUser()
@@ -27,23 +24,16 @@ for (let i=0; i < featuresInfo.length; i++){
     let randomNumber = Math.random()
     if (randomNumber < featuresInfo[i].ratio){
     if (featuresInfo[i].includedCountries.includes(userDetails[0].location) || featuresInfo[i].enabledEmails.includes(userDetails[0].email)){
-        console.log('GOT IT')
         featuresToogle.push(featuresInfo[i].name)
     } else if (featuresInfo[i].excludedCountries.includes(userDetails[0].location)) {
-        console.log('SORRY')
-    } else {console.log('I AM AN ELSE')} 
+    }
 }
 }}
 
     
 const startServer = async () => {
-
     try {
-        const url = `mongodb://127.0.0.1/${databaseName}`;
-        mongoose.connect(url, { useNewUrlParser: true });
-    
         app.use(express.json())
-    
     
         app.get('/', (req, res) => {
         res.sendFile(path.join(__dirname, 'index.html'))
@@ -58,7 +48,6 @@ const startServer = async () => {
             console.log(`Request received: ${req.method} - ${req.url}`)
             next()
             })
-
     
         app.use((_req, res) => {
         return res.status(404).json({ message: 'Path not found' })
