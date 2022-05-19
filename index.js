@@ -11,6 +11,7 @@ const users = require('./db/example_users.json')
 const featuresInfo = require('./db/features.json')
 
 
+let featuresToogle = []
 let userDetails = []
 const pickRandomUser = () => {
     userDetails = []
@@ -18,13 +19,22 @@ const pickRandomUser = () => {
     userDetails.push(userRandomized)
 }
 
-let featuresToogle = {
-    "SuperCoolFeature": true,
-    "MarketingBanner": false,
-    "SimplifiedNavBar": false,
-    "EnhancedDashboardFeature": false,
-    "NewUserOnboardingJourney": false
+
+const gettingFeatures = () => {
+featuresToogle=[]
+pickRandomUser()
+for (let i=0; i < featuresInfo.length; i++){
+    let randomNumber = Math.random()
+    if (randomNumber < featuresInfo[i].ratio){
+    if (featuresInfo[i].includedCountries.includes(userDetails[0].location) || featuresInfo[i].enabledEmails.includes(userDetails[0].email)){
+        console.log('GOT IT')
+        featuresToogle.push(featuresInfo[i].name)
+    } else if (featuresInfo[i].excludedCountries.includes(userDetails[0].location)) {
+        console.log('SORRY')
+    } else {console.log('I AM AN ELSE')} 
 }
+}}
+
     
 const startServer = async () => {
 
@@ -37,34 +47,24 @@ const startServer = async () => {
     
         app.get('/', (req, res) => {
         res.sendFile(path.join(__dirname, 'index.html'))
-        })
-
-        app.use((req, _res, next) => {
-        console.log(`Request received: ${req.method} - ${req.url}`)
-        next()
-        })
+        }),
 
         app.get('/result', function (_req, res) {
-        pickRandomUser()
-        console.log('User =>', userDetails[0].email)
-        console.log('Country =>', userDetails[0].location)
+        gettingFeatures()
+        return res.send({"user":userDetails,featuresToogle})
+    }),
 
+        app.use((req, _res, next) => {
+            console.log(`Request received: ${req.method} - ${req.url}`)
+            next()
+            })
 
-        if (userDetails[0].email === "mike@example.com")
-        {
-            featuresToogle.SuperCoolFeature = false
-            res.send({"user":userDetails,featuresToogle})
-        }
-        else  {
-            res.send({"user":userDetails,featuresToogle})
-        }
-        })
     
         app.use((_req, res) => {
         return res.status(404).json({ message: 'Path not found' })
         })
     
-        const server = app.listen(PORT, HOST, () => console.log(`🚀 Server up and running on PORT ${PORT}`)) // app.listen takes the port and starts the server up using express
+        const server = app.listen(PORT, HOST, () => console.log(`🚀 Server up and running on PORT ${PORT}`))
         server.timeout = 1000
     
     } catch (err) {
