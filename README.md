@@ -12,6 +12,14 @@ I do assume the following:
 - There is no need for a database.
 - There is no need for environment variables.
 
+## Dependencies
+- Express
+- nodemon
+- jest
+- supertest
+
+Node version = v16.14.2
+
 ## How to run it
 
 First, clone the repo.
